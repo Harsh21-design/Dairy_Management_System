@@ -1,0 +1,63 @@
+import asyncio
+from fastmcp import Client
+
+client = Client("http://localhost:8000/mcp")
+
+async def main():
+    async with client:
+        # Basic server interaction
+        await client.ping()
+        print("CONNECTED TO MCP SERVER!!")
+        
+        # # List available tools
+        tools = await client.list_tools()
+        print("Available tools:", tools)
+
+        # Add a new customer
+        resp_1 = await client.call_tool(
+            "add_customer",
+            {
+                "name":"Harsh Malviya",
+                "phone":9874563210,
+                "date":"22-10-2025"
+            }
+        )
+        print("Added Customer:",resp_1)
+
+        # # Add milk entry
+        resp_2 = await client.call_tool(
+            "add_milk_entry",
+            {
+                "customer_id":6,
+                "quantity_in_litres":2,
+                "additional_qty":0,
+                "amount":120,
+                "day":"",
+                "month":"",
+                "year":""
+            }
+        )
+        print("Milk Entry Added:",resp_2.content[0].text)
+
+        # # get monthly bill 
+        resp_3 = await client.call_tool(
+            "monthly_bill",
+            {
+                "customer_id":6,
+                "month":"",
+                "year":""
+            }
+
+        )
+        print("Monthly Bill: ",resp_3.content[0].text)
+
+        # get customers list
+        resp_4 = await client.call_tool(
+            "customer_list",
+            {
+            }
+
+        )
+        print("All customers:\n",resp_4.content[0].text)
+
+asyncio.run(main())
