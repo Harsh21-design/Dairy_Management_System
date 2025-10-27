@@ -118,7 +118,7 @@ elif page == "Add Customer":
     st.header("Add A New Customer")
     st.markdown("#### Fill below details to add a new customer in My Dairy App.")
     name = st.text_input("Enter Customer Name:-")
-    phone = st.number_input("Enter Customer Phone Number:-")
+    phone = st.text_input("Enter Customer Phone Number:-")
     date = st.text_input("Enter Customer Registration Date:-")
     if st.button("Add"):
         if  name and phone and date:

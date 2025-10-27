@@ -1,0 +1,10 @@
+Streamlit UI  ⇄  FastMCP Client  ⇄  FastMCP Server  ⇄  SQLite Database
+
+1.Server:
+Handles data logic (insert, fetch, calculate).
+
+2.Client (Streamlit):
+Handles user interaction, form input, and visual display.
+
+3.Communication:
+Async tool calls via HTTP (StreamableHttpTransport).
