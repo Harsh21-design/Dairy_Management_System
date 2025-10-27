@@ -2,6 +2,7 @@ import asyncio
 import json
 import pandas as pd
 import streamlit as st
+import datetime
 from streamlit_option_menu import option_menu
 from fastmcp import Client
 from fastmcp.client import StreamableHttpTransport
@@ -33,7 +34,7 @@ async def add_customer(name,phone,date):
         return resp_1.content[0].text
 
 # SECOND TOOL - Add milk entry
-async def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year):
+async def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date):
     async with client:
         resp_2 = await client.call_tool(
             "add_milk_entry",
@@ -42,9 +43,10 @@ async def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,da
                 "quantity_in_litres":quantity_in_litres,
                 "additional_qty":additional_qty,
                 "amount":amount,
-                "day":day,
-                "month":month,
-                "year":year
+                # "day":day,
+                # "month":month,
+                # "year":year
+                "date":date
             }
         )
     return resp_2.content[0].text
@@ -119,12 +121,12 @@ elif page == "Add Customer":
     st.markdown("#### Fill below details to add a new customer in My Dairy App.")
     name = st.text_input("Enter Customer Name:-")
     phone = st.text_input("Enter Customer Phone Number:-")
-    date = st.text_input("Enter Customer Registration Date:-")
+    date = st.date_input("Enter Customer Registration Date:-",value=datetime.date.today())
     if st.button("Add"):
         if  name and phone and date:
             with st.spinner("Adding..."):
                 get = asyncio.run(add_customer(name,phone,date))
-                st.success(f"Customer Added Successfully at customer ID number : {get}")
+                st.markdown(f"**Customer Added Successfully at customer ID number: ###{get}**")
         else:
             st.warning("Please enter all the details to add a new customer!")
 
@@ -135,27 +137,31 @@ elif page == "Add Milk Entry":
     quantity_in_litres = st.number_input("Enter Milk Quantity In Litres :-",value=0)
     additional_qty = st.number_input("Enter Additional Quantity :-",value=0)
     amount = st.number_input("Enter Total Amount :-")
-    day = st.text_input("Enter Day :-")
-    month = st.text_input("Enter Month :-")
-    year = st.text_input("Enter Year:-")
+    # day = st.text_input("Enter Day :-")
+    # month = st.text_input("Enter Month :-")
+    # year = st.text_input("Enter Year:-")
+    date = st.date_input("Enter Milk Entry Date:-",value=datetime.date.today())
     if st.button("Add New Entry"):
-        if customer_id and quantity_in_litres and amount and day and month and year or additional_qty:
+        # if customer_id and quantity_in_litres and amount and day and month and year or additional_qty:
+        if customer_id and quantity_in_litres and amount and date:
             with st.spinner("Adding..."):
-                get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year))
-                st.success(f"New Milk Entry Added for Customer ID {customer_id} Successfully")
+                # get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year))
+                get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date))
+                st.markdown(f"**New Milk Entry Added for Customer ID {customer_id} Successfully**")
         else:
             st.warning("Please enter all the details to add a new milk entry!")
 elif page == "Get Monthly Bill":
     st.header("Get Monthly Bill for a Particular Customer ID ")
     st.markdown("#### Fill Below details to get the total monthly bill.")
     customer_id = st.text_input("Enter Customer ID :-")
-    month = st.text_input("Enter Month :-")
+    month = st.selectbox("Select Month :-", options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
     year = st.text_input("Enter Year:-")
     if st.button("Show Bill"):
         if customer_id and month and year:
             with st.spinner("Showing..."):
                 get = asyncio.run(monthly_bill(customer_id,month,year))
-                st.success(f"Total Monthly Bill for Customer ID {customer_id} : \n{get}")
+                st.markdown(f"**Total Monthly Bill for Customer ID {customer_id}:**")
+                st.markdown(f"## Rs.{get}")
         else:
             st.warning("Please enter all the details to get the monthly bill!")
 
