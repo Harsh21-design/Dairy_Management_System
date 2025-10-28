@@ -99,22 +99,27 @@ with st.sidebar:
     )
 
 if page == "Home":
-    st.title("DAIRY MANAGEMENT APP")
-    st.markdown("#### A Dairy Management System using MCP, SQLiteDB and Streamlit")
-    st.write("Different features of My Dairy App Listed at Sidebar Navigation")
+    st.title("DAIRY MANAGEMENT SYSTEM")
+    st.subheader("A Dairy Management System using MCP, SQLiteDB and Streamlit")
+    st.markdown("##### Manage all your Dairy related operations with My Dairy App using Sidebar Navigation.")
+    # st.markdown("Different operations of My Dairy App are listed below:")
+    # st.write("1. Adding New Customers \n2. Adding & Viewing Milk Entries \n3. Getting Total Monthly Bills \n4. Viewing Customer List")
 
 elif page == "Get Customer List":
     st.header("My Dairy Customers")
-    st.markdown("#### List down all customers of My Dairy App.")
-    if st.button("Show all customers"):
-        with st.spinner("showing..."):
-            get = asyncio.run(customer_list())
-            # st.success(get)
-            data = json.loads(get)
-            # customers = data["customers"]
-            df = pd.DataFrame(data,
-                              columns=["ID","Name","Phone","Date"])
-            st.dataframe(df)
+    st.markdown("### List down all customers of My Dairy App.")
+    if st.button("Show All"):
+        try:
+            with st.spinner("showing..."):
+                get = asyncio.run(customer_list())
+                # st.success(get)
+                data = json.loads(get)
+                # customers = data["customers"]
+                df = pd.DataFrame(data,
+                                  columns=["ID","Name","Phone","Date"])
+                st.dataframe(df)
+        except IndexError:
+            st.warning("No customers found in the database!")
 
 elif page == "Add Customer":
     st.header("Add A New Customer")
@@ -126,7 +131,7 @@ elif page == "Add Customer":
         if  name and phone and date:
             with st.spinner("Adding..."):
                 get = asyncio.run(add_customer(name,phone,date))
-                st.markdown(f"**Customer Added Successfully at customer ID number: ###{get}**")
+                st.markdown(f"## **Customer Added Successfully at customer ID number: {get}**")
         else:
             st.warning("Please enter all the details to add a new customer!")
 
@@ -137,9 +142,9 @@ elif page == "Add Milk Entry":
     quantity_in_litres = st.number_input("Enter Milk Quantity In Litres :-",value=0)
     additional_qty = st.number_input("Enter Additional Quantity :-",value=0)
     amount = st.number_input("Enter Total Amount :-")
-    day = st.text_input("Enter Day :-")
-    month = st.selectbox("Select Month :-", options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    year = st.text_input("Enter Year :-")
+    day = st.selectbox("Select Day :-", options=list(range(1, 32)))
+    month = st.selectbox("Select Month :-", options=list(range(1, 13)))
+    year = st.selectbox("Select Year :-", options=list(range(2020, 2051)))
     # date = st.date_input("Enter Date:-",value=datetime.date.today())
     if st.button("Add New Entry"):
         if customer_id and quantity_in_litres and amount and day and month and year or additional_qty:
@@ -147,24 +152,9 @@ elif page == "Add Milk Entry":
             with st.spinner("Adding..."):
                 # get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year))
                 get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year))
-                st.markdown(f"**New Milk Entry Added for Customer ID {customer_id} Successfully**")
+                st.markdown(f"## **New Milk Entry Added Successfully for Customer ID: {customer_id}**")
         else:
             st.warning("Please enter all the details to add a new milk entry!")
-elif page == "Get Monthly Bill":
-    st.header("Get Monthly Bill for a Particular Customer ID ")
-    st.markdown("#### Fill Below details to get the total monthly bill.")
-    customer_id = st.text_input("Enter Customer ID :-")
-    month = st.selectbox("Select Month :-", options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    year = st.text_input("Enter Year:-")
-    if st.button("Show Bill"):
-        if customer_id and month and year:
-            with st.spinner("Showing..."):
-                get = asyncio.run(monthly_bill(customer_id,month,year))
-                st.markdown(f"**Total Monthly Bill for Customer ID {customer_id}:**")
-                st.markdown(f"## Rs.{get}")
-        else:
-            st.warning("Please enter all the details to get the monthly bill!")
-
     
 elif page == "Get Milk Entry List":
     st.header("Get Milk Entry List for a Particular Customer ID ")
@@ -181,3 +171,18 @@ elif page == "Get Milk Entry List":
                 st.dataframe(df)
         else:
             st.warning("Please enter a valid Customer ID")
+
+elif page == "Get Monthly Bill":
+    st.header("Get Monthly Bill for a Particular Customer ID ")
+    st.markdown("#### Fill Below details to get the total monthly bill.")
+    customer_id = st.text_input("Enter Customer ID :-")
+    month = st.selectbox("Select Month :-", options=list(range(1, 13)))
+    year = st.selectbox("Select Year :-", options=list(range(2020, 2051)))
+    if st.button("Show Bill"):
+        if customer_id and month and year:
+            with st.spinner("Showing..."):
+                get = asyncio.run(monthly_bill(customer_id,month,year))
+                st.markdown(f"## **Total Monthly Bill for Customer ID {customer_id}:**")
+                st.markdown(f"## Rs.{get}")
+        else:
+            st.warning("Please enter all the details to get the monthly bill!")

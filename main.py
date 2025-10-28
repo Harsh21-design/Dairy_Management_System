@@ -83,6 +83,8 @@ def customer_list():
         cur = c.execute("SELECT * FROM customers")
         customers = cur.fetchall()
         # return {"status":"ok","customers":customers}
+        if customers is None:
+            return {"status":"no customers found"}
         return customers
 
 # FIFTH TOOL - Milk Entries for a Customer
