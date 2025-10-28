@@ -26,13 +26,13 @@ def init_db():
                 quantity_in_litres REAL NOT NULL,
                 additional_qty REAL NOT NULL,
                 amount REAL NOT NULL,
-                date TEXT NOT NULL,
+                day TEXT NOT NULL,
+                month TEXT NOT NULL,
+                year TEXT NOT NULL,
                 FOREIGN KEY (customer_id) REFERENCES customers (id)
             )
         """)
-                # day TEXT NOT NULL,
-                # month TEXT NOT NULL,
-                # year TEXT NOT NULL,
+               
 
 init_db()
 
@@ -50,12 +50,12 @@ def add_customer(name,phone,date):
 
 # SECOND TOOL - Add milk entry
 @mcp.tool()
-def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date):
+def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day, month, year):
     # ADD MILK ENTRY INTO DATABASE
     with sqlite3.connect(DB_PATH) as c:
-        cur = c.execute(""" INSERT INTO milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date)
-                            VALUES(?,?,?,?,?)""",
-                            (customer_id,quantity_in_litres,additional_qty,amount,date)
+        cur = c.execute(""" INSERT INTO milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day, month, year)
+                            VALUES(?,?,?,?,?,?,?)""",
+                            (customer_id,quantity_in_litres,additional_qty,amount,day, month, year)
         )
         # return {"status":"ok","id":cur.lastrowid}
         return cur.lastrowid
