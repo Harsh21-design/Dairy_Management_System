@@ -34,7 +34,7 @@ async def add_customer(name,phone,date):
         return resp_1.content[0].text
 
 # SECOND TOOL - Add milk entry
-async def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date):
+async def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year):
     async with client:
         resp_2 = await client.call_tool(
             "add_milk_entry",
@@ -43,10 +43,10 @@ async def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,da
                 "quantity_in_litres":quantity_in_litres,
                 "additional_qty":additional_qty,
                 "amount":amount,
-                # "day":day,
-                # "month":month,
-                # "year":year
-                "date":date
+                "day":day,
+                "month":month,
+                "year":year
+                # "date":date
             }
         )
     return resp_2.content[0].text
@@ -137,16 +137,16 @@ elif page == "Add Milk Entry":
     quantity_in_litres = st.number_input("Enter Milk Quantity In Litres :-",value=0)
     additional_qty = st.number_input("Enter Additional Quantity :-",value=0)
     amount = st.number_input("Enter Total Amount :-")
-    # day = st.text_input("Enter Day :-")
-    # month = st.text_input("Enter Month :-")
-    # year = st.text_input("Enter Year:-")
-    date = st.date_input("Enter Milk Entry Date:-",value=datetime.date.today())
+    day = st.text_input("Enter Day :-")
+    month = st.selectbox("Select Month :-", options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    year = st.text_input("Enter Year :-")
+    # date = st.date_input("Enter Date:-",value=datetime.date.today())
     if st.button("Add New Entry"):
-        # if customer_id and quantity_in_litres and amount and day and month and year or additional_qty:
-        if customer_id and quantity_in_litres and amount and date:
+        if customer_id and quantity_in_litres and amount and day and month and year or additional_qty:
+        # if customer_id and quantity_in_litres and amount and date:
             with st.spinner("Adding..."):
                 # get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year))
-                get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date))
+                get = asyncio.run(add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day,month,year))
                 st.markdown(f"**New Milk Entry Added for Customer ID {customer_id} Successfully**")
         else:
             st.warning("Please enter all the details to add a new milk entry!")
