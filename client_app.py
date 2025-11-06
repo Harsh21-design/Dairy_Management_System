@@ -18,7 +18,7 @@ async def connection():
         await client.ping()
         print("CONNECTED TO MCP SERVER!!")
 
-asyncio.run(connection())
+# asyncio.run(connection())
 
 # FIRST TOOL - Add customer
 async def add_customer(name,phone,date):
@@ -89,23 +89,27 @@ async def milk_entries(customer_id):
 # STREAMLIT UI
 # st app configuration
 st.set_page_config(page_title="Dairy Management",
+                   page_icon="milk-bottle",
                    layout="wide")
+
 
 # sidebar navigation
 with st.sidebar:
     page = option_menu(
-        menu_title="My Dairy",
-        options=["Home","Add Customer","Add Milk Entry","Get Monthly Bill","Get Customer List","Get Milk Entry List"]
+        menu_title="🥛My Dairy App",
+        menu_icon="🥛",
+        options=["🏠 Home","👤 Add Customer","➕ Add Milk Entry","🧾 Get Monthly Bill","📋 Get Customer List","🗒️ Get Milk Entry List"]
     )
 
-if page == "Home":
-    st.title("DAIRY MANAGEMENT SYSTEM")
+if page == "🏠 Home":
+    st.title("🥛DAIRY MANAGEMENT SYSTEM🥛")
+    st.header("Welcome to My Dairy App!")
     st.subheader("A Dairy Management System using MCP, SQLiteDB and Streamlit")
     st.markdown("##### Manage all your Dairy related operations with My Dairy App using Sidebar Navigation.")
     # st.markdown("Different operations of My Dairy App are listed below:")
     # st.write("1. Adding New Customers \n2. Adding & Viewing Milk Entries \n3. Getting Total Monthly Bills \n4. Viewing Customer List")
 
-elif page == "Get Customer List":
+elif page == "📋 Get Customer List":
     st.header("My Dairy Customers")
     st.markdown("### List down all customers of My Dairy App.")
     if st.button("Show All"):
@@ -121,13 +125,13 @@ elif page == "Get Customer List":
         except IndexError:
             st.warning("No customers found in the database!")
 
-elif page == "Add Customer":
+elif page == "👤 Add Customer":
     st.header("Add A New Customer")
     st.markdown("#### Fill below details to add a new customer in My Dairy App.")
     name = st.text_input("Enter Customer Name:-")
     phone = st.text_input("Enter Customer Phone Number:-")
     date = st.date_input("Enter Customer Registration Date:-",value=datetime.date.today())
-    if st.button("Add"):
+    if st.button("Add New"):
         if  name and phone and date:
             with st.spinner("Adding..."):
                 get = asyncio.run(add_customer(name,phone,date))
@@ -135,7 +139,7 @@ elif page == "Add Customer":
         else:
             st.warning("Please enter all the details to add a new customer!")
 
-elif page == "Add Milk Entry":
+elif page == "➕ Add Milk Entry":
     st.header("Add A New Milk Entry")
     st.markdown("#### Fill below details to add a new milk entry for a particular customer ID.")
     customer_id = st.text_input("Enter Customer ID :-")
@@ -156,8 +160,8 @@ elif page == "Add Milk Entry":
         else:
             st.warning("Please enter all the details to add a new milk entry!")
     
-elif page == "Get Milk Entry List":
-    st.header("Get Milk Entry List for a Particular Customer ID ")
+elif page == "🗒️ Get Milk Entry List":
+    st.header("Get Milk Entries for a Particular Customer ID ")
     st.markdown("#### Fill Below details to get the total milk entries.")
     customer_id = st.text_input("Enter Customer ID :-")
     if st.button("Show all entries"):
@@ -172,7 +176,7 @@ elif page == "Get Milk Entry List":
         else:
             st.warning("Please enter a valid Customer ID")
 
-elif page == "Get Monthly Bill":
+elif page == "🧾 Get Monthly Bill":
     st.header("Get Monthly Bill for a Particular Customer ID ")
     st.markdown("#### Fill Below details to get the total monthly bill.")
     customer_id = st.text_input("Enter Customer ID :-")
