@@ -58,13 +58,11 @@ Claude will automatically call the correct MCP tool.
 ---
 
 ### 📁 Project Structure
-- ├── main.py                # FastMCP server
-- ├── dairy.db               # SQLite database (auto-created)
-- ├── streamlit_client.py    # Streamlit UI client
-- ├── README.md
+├── main.py # FastMCP server
+├── dairy.db # SQLite database (auto-created)
+├── streamlit_client.py # Streamlit UI client
+├── README.md
 
 
 ### ❤️ Author
 Harsh Malviya
-- Dairy Management System using MCP + Streamlit + SQLite
-- A Dairy Management System using MCP, SQLiteDB and Streamlit
