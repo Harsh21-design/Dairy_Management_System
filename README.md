@@ -67,3 +67,4 @@ Claude will automatically call the correct MCP tool.
 ## ❤️ Author
 Harsh Malviya
 Dairy Management System using MCP + Streamlit + SQLite
+A Dairy Management System using MCP, SQLiteDB and Streamlit
