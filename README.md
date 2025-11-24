@@ -31,8 +31,6 @@ All database operations are handled using SQLite.
 
 This project includes **two independent MCP clients**, both using the same server.
 
----
-
 ### 1️⃣ Streamlit Web Client (Main UI)
 
 A clean and interactive web dashboard to:
@@ -58,11 +56,10 @@ Claude will automatically call the correct MCP tool.
 ---
 
 ### 📁 Project Structure
-├── main.py # FastMCP server
-├── dairy.db # SQLite database (auto-created)
-├── streamlit_client.py # Streamlit UI client
-├── README.md
+Files:
+- main.py # FastMCP server
+- dairy.db # SQLite database (auto-created)
+- streamlit_client.py # Streamlit UI client
+- README.md
 
-
-### ❤️ Author
-Harsh Malviya
+---
