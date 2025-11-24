@@ -1,1 +1,2 @@
-#A Dairy Management System using MCP, SQLiteDB and Streamlit
+A Dairy Management System using MCP, SQLiteDB and Streamlit
+
