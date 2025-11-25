@@ -1,4 +1,5 @@
 import os
+import json
 import sqlite3
 from fastmcp import FastMCP
 
@@ -8,9 +9,10 @@ mcp = FastMCP("DAIRY_MANAGEMENT")
 
 # Create Tables in database
 def init_db():
-    with sqlite3.connect(DB_PATH) as c:
+    with sqlite3.connect(DB_PATH) as conn:
         # customers table
-        c.execute("""
+        cur = conn.cursor()
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS customers(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -19,57 +21,65 @@ def init_db():
             )
         """)
         # milk records table
-        c.execute("""
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS milk_entry(
                 sr_no INTEGER PRIMARY KEY AUTOINCREMENT,
                 customer_id INTEGER,
                 quantity_in_litres REAL NOT NULL,
                 additional_qty REAL NOT NULL,
                 amount REAL NOT NULL,
-                day TEXT NOT NULL,
-                month TEXT NOT NULL,
-                year TEXT NOT NULL,
+                date TEXT NOT NULL,
                 FOREIGN KEY (customer_id) REFERENCES customers (id)
             )
         """)
                
-
 init_db()
 
 # FIRST TOOL - Add customer
 @mcp.tool()
 def add_customer(name,phone,date):
     # ADD CUSTOMER DETAILS INTO DATABASE
-    with sqlite3.connect(DB_PATH) as c:
-        cur = c.execute(""" INSERT INTO customers(name,phone,date)
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.cursor()
+        cur.execute("""INSERT INTO customers(name,phone,date)
                        VALUES(?, ?, ?)""",
                        (name, phone, date)
         )
+        conn.commit()
         # return {"status":"ok","id":cur.lastrowid}
         return cur.lastrowid
 
 # SECOND TOOL - Add milk entry
 @mcp.tool()
-def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day, month, year):
+def add_milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date):
     # ADD MILK ENTRY INTO DATABASE
-    with sqlite3.connect(DB_PATH) as c:
-        cur = c.execute(""" INSERT INTO milk_entry(customer_id,quantity_in_litres,additional_qty,amount,day, month, year)
-                            VALUES(?,?,?,?,?,?,?)""",
-                            (customer_id,quantity_in_litres,additional_qty,amount,day, month, year)
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.cursor()
+        cur.execute("""INSERT INTO milk_entry(customer_id,quantity_in_litres,additional_qty,amount,date)
+                       VALUES(?, ?, ?, ?, ?)""",
+                       (customer_id,quantity_in_litres,additional_qty,amount,date)
         )
+
+        conn.commit()
         # return {"status":"ok","id":cur.lastrowid}
         return cur.lastrowid
 
 # THIRD TOOL - Total Monthly Bill for a single customer
 @mcp.tool()
-def monthly_bill(customer_id, month, year):
+def monthly_bill(customer_id,month,year):
     # FETCH THE TOTAL BILL FOR A PARTICULAR CUSTOMER IN A GIVEN MONTH AND YEAR
-    with sqlite3.connect(DB_PATH) as c:
-        cur = c.execute("""SELECT SUM(amount) 
+    with sqlite3.connect(DB_PATH) as conn:
+        month = str(month).zfill(2)
+        year = str(year)
+        cur = conn.cursor()
+        cur.execute("""SELECT SUM(amount) 
                         FROM milk_entry 
-                        WHERE customer_id=? AND month=? AND year=?""",
-                        (customer_id, month, year))
+                        WHERE customer_id=? 
+                        AND strftime('%m',date)=?
+                        AND strftime('%Y',date)=?""",
+                        (customer_id,month,year))
         total = cur.fetchone()[0]
+
         if total is None:
             total = 0
         # return {"status":"ok","total_bill":total} 
@@ -79,25 +89,33 @@ def monthly_bill(customer_id, month, year):
 @mcp.tool()
 def customer_list():
     # FETCH ALL CUSTOMERS FROM DATABASE
-    with sqlite3.connect(DB_PATH) as c:
-        cur = c.execute("SELECT * FROM customers")
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM customers")
         customers = cur.fetchall()
+        
         # return {"status":"ok","customers":customers}
-        if customers is None:
+        if len(customers) == 0:
             return {"status":"no customers found"}
-        return customers
+        return json.dumps(customers)
 
 # FIFTH TOOL - Milk Entries for a Customer
 @mcp.tool()
 def milk_entries(customer_id):
     # FETCH ALL MILK ENTRIES FOR A PARTICULAR CUSTOMER ID
-    with sqlite3.connect(DB_PATH) as c:
-        cur = c.execute("""SELECT * 
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.cursor()
+        cur.execute("""SELECT * 
         FROM milk_entry 
         WHERE customer_id = ?""",
         (customer_id,))
         entries = cur.fetchall()
-        return entries
+
+        if len(entries) > 0:
+            return entries
+        else:
+            return {"status":"no entries found"}
+            
     
 # RUN THE MCP
 if __name__ == "__main__":
